@@ -3,43 +3,18 @@
 var tessel = require('tessel');
 var ambientlib = require('ambient-attx4');
 var climatelib = require('climate-si7020');
+var wifi = require('wifi-cc3000');
 var https = require('https');
 var needle = require("needle");
+
 var config = require("./config/config.json");
-var wifi = require('wifi-cc3000');
-var allowedTimeouts = 0+config.allowedTimouts;
+
+var wifiManager = require('./lib/wifi_manager');
+
 var ambient = ambientlib.use(tessel.port[config.ambientPort]);
 var climate = climatelib.use(tessel.port[config.climatePort]);
 // var led1 = tessel.led[0].output(1);
 // var led2 = tessel.led[1].output(1);
-
-var fetchingData = null;
-
-var wifiManager = {
-  connect: function connect() {
-    console.log("Connecting to %s...", config.wifi.network)
-
-    wifi.connect({
-      security: config.wifi.security || 'wpa2'
-      , ssid: config.wifi.network
-      , password: config.wifi.password
-      , timeout: config.wifi.timeout || 20
-    });
-  }
-  ,
-  powerCycle: function powerCycle() {
-    wifi.reset(function() {
-      console.log('Reset called');
-      allowedTimeouts = 0+config.allowedTimouts;
-      setTimeout(function() {
-        if (!wifi.isConnected()) {
-          console.log('Wifi not connected, trying...');
-          this.connect()
-        }
-      }, 20 * 1000);
-    })
-  }
-};
 
 function getLightLevel() {
   ambient.getLightLevel( function(err, ldata) {
@@ -64,20 +39,67 @@ function getLightLevel() {
   });
 }
 
+var httpTiming = {
+  requests: 0
+  , successRequests: 0
+  , failedRequests: 0
+  , duration: 0.0
+  , rate: function() {
+    if (this.requests > 1) {
+      return 1000.0 * (0.0 + this.requests)/ this.duration
+    }
+    else {
+      0.0
+    }
+  }
+  , lostRequests: function() {
+    return this.requests - this.finishedRequests();
+  }
+  , finishedRequests: function() {
+    return this.successRequests + this.failedRequests;
+  }
+
+}
+
+function countRequestStart() {
+  httpTiming.requests += 1
+}
+
+function trackRequestTiming(duration, success) {
+  httpTiming.duration += duration;
+  if (success === true) {
+    httpTiming.successRequests += 1
+  }
+  if (success === false) {
+    httpTiming.failedRequests += 1
+  }
+}
+
+function logRequestTiming() {
+  console.log("Processed %d of %d requests in %d msec (%d req/sec)", httpTiming.finishedRequests(), httpTiming.requests, httpTiming.duration, httpTiming.rate());
+}
+
 function postData(data) {
-  console.log("posting to %s [%s]", config.repoUrl, data)
+  console.log("posting to %s", config.repoUrl)
+  var t = (new Date()).getMilliseconds()
+  countRequestStart()
   needle.post( config.repoUrl, data, function(error, resp) {
-    if (!error && resp.statusCode == 200) {
-      console.log("RESPONSE", resp.body)
+    var success = (!error && resp.statusCode == 200);
+    var dt = (new Date()).getMilliseconds() - t;
+    trackRequestTiming(dt, success);
+
+    if (success) {
+      console.log("SUCCESS")
     } else {
       console.log("FAIL", error)
     }
-  })
+  });
 }
 
 console.log("Binding to the ambient ready signal");
 ambient.on('ready', function () {
-  fetchingData = setInterval( getLightLevel, 500)
+  setInterval( getLightLevel, 200)
+  setInterval( logRequestTiming, 5000)
 });
 
 ambient.on('error', function (err) {
@@ -108,6 +130,7 @@ wifi.on("error", function(data) {
 });
 
 console.log("Running...")
+console.log("%j", wifiManager)
 wifiManager.connect()
 
 

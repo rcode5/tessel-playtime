@@ -2,7 +2,7 @@
   "name": "tessel-playtime"
   , "version": "1.0.0"
   , "description": "play with your tessel"
-  , "main": "index.js"
+  , "main": "networked_data_transfer.js"
   , "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
@@ -14,12 +14,15 @@
     , "tessel-kit": ""
     , "needle": ""
     , "wifi-cc3000": ""
+    , "async": ""
+
   }
   , "devDependencies": {
     "gulp": "^3.8.8"
   }
- , "scripts": {
-  "start": "tessel run index.js"
-   , "blink": "tessel run blinky.js"
+  , "scripts": {
+    "networked": "tessel run networked_data_transfer.js"
+    , "usb": "tessel run usb_data_transfer.js"
+    , "blink": "tessel run blinky.js"
   }
 }
