@@ -1,8 +1,6 @@
 // Import the interface to Tessel hardware
 var tessel = require('tessel');
 
-console.log(tessel)
-console.log(tessel.findTessel())
 // Set the led pins as outputs with initial states
 // Truthy initial state sets the pin high
 // Falsy sets it low.

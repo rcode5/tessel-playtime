@@ -66,11 +66,7 @@ function postData(data) {
 
 
 ambient.on('ready', function () {
-  getLightLevel();
-  // setInterval( function () {
-  //   console.log("loop");
-  //   getLightLevel();
-  // }, 1000);
+  setInterval( getLightLevel, 1000)
 });
 
 ambient.on('error', function (err) {

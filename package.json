@@ -17,6 +17,7 @@
     "gulp": "^3.8.8"
   }
  , "scripts": {
-	"start": "node index.js"
+  "start": "tessel run index.js"
+   , "blink": "tessel run blinky.js"
   }
 }
