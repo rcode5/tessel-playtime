@@ -12,6 +12,8 @@
     "climate-si7020": ""
     , "ambient-attx4": ""
     , "tessel-kit": ""
+    , "needle": ""
+    , "wifi-cc3000": ""
   }
   , "devDependencies": {
     "gulp": "^3.8.8"
