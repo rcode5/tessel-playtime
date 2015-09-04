@@ -1,0 +1,22 @@
+{
+  "name": "tessel-playtime"
+  , "version": "1.0.0"
+  , "description": "play with your tessel"
+  , "main": "index.js"
+  , "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+  , "author": "Carbon Five"
+  , "license": "ISC"
+  , "dependencies": {
+    "climate-si7020": ""
+    , "ambient-attx4": ""
+    , "tessel-kit": ""
+  }
+  , "devDependencies": {
+    "gulp": "^3.8.8"
+  }
+ , "scripts": {
+	"start": "node index.js"
+  }
+}

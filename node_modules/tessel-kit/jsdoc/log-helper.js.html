@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: log-helper.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: log-helper.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*!
+ ~ Copyright (c) 2015 George Norman.
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ --------------------------------------------------------------
+ ~ log-helper
+ ~ --------------------------------------------------------------
+ */
+
+var tesselKit = require("tessel-kit");
+var generalUtils = tesselKit.generalUtils;
+
+/**
+ * A tessel-kit module that contains helper functions for logging to the console.
+ *
+ * @module log-helper
+ */
+module.exports = (function() {
+  "use strict";
+
+  // get the optional 'logHelperEnabled' property from either the commandline or the config file and if not found, then default to true.
+  var enabled = generalUtils.coalesceOnEmpty(generalUtils.getArgumentValue("logHelperEnabled", tesselKit.tesselKitConfig), true);
+
+  return {
+    /** Return true, if logging (via log-helper) is enabled; otherwise, return false. */
+    isEnabled: function() {
+      return enabled;
+    },
+
+    /** Enable log-helper logging to console. */
+    enable: function() {
+      enabled = true;
+    },
+
+    /** Disable log-helper logging to console. */
+    disable: function() {
+      enabled = false;
+    },
+
+    /**
+     * Log a message to the console.
+     *
+     * @param msg - the message to be logged.
+     */
+    msg: function(msg) {
+      doLog(msg);
+    },
+
+    /**
+     * Log a level-1 heading.
+     *
+     * @param heading - the heading text.
+     */
+    heading1: function(heading) {
+      doLog('###################################################################');
+      doLog("# " + heading);
+      doLog('###################################################################');
+    },
+
+    /**
+     * Logs a level-1 divider.
+     */
+    divider1: function() {
+      doLog('###################################################################');
+    },
+
+    /**
+     * Log a level-2 heading.
+     *
+     * @param heading - the heading text.
+     */
+    heading2: function(heading) {
+      doLog('===================================================================');
+      doLog("= " + heading);
+      doLog('===================================================================');
+    },
+
+    /**
+     * Logs a level-2 divider.
+     */
+    divider2: function() {
+      doLog('===================================================================');
+    },
+
+    /**
+     * Log a level-3 heading.
+     *
+     * @param heading - the heading text.
+     */
+    heading3: function(heading) {
+      doLog('-------------------------------------------------------------------');
+      doLog("- " + heading);
+      doLog('-------------------------------------------------------------------');
+    },
+
+    /**
+     * Logs a level-3 divider.
+     */
+    divider3: function() {
+      doLog('-------------------------------------------------------------------');
+    },
+
+
+    /**
+     * Logs a String, of the form "propertyName=propertyValue\n", for every property of the given obj.
+     *
+     * @param title optional title to log above the property listing.
+     * @param obj object to retrieve the properties from.
+     */
+    listProperties: function(title, obj) {
+      if (arguments.length == 2) {
+        this.msg(title);
+      } else {
+        obj = title;
+      }
+      doLog(generalUtils.getProperties(obj));
+    },
+
+    /**
+     * Log an error message.
+     */
+    error: function(errMsg, err) {
+      this.newline();
+      doLog('*******************************************************************');
+      doLog('* ERROR                                                           *');
+      doLog('*******************************************************************');
+
+      if (generalUtils.isEmpty(err)) {
+        doLog(errMsg);
+      } else {
+        doLogError(errMsg, err);
+      }
+      this.newline();
+    },
+
+    /**
+     * Log a new line.
+     */
+    newline: function() {
+      doLog("");
+    }
+  };
+
+  // -----------------------------------
+  // Private functions
+  // -----------------------------------
+
+  function doLog(msg) {
+    if (enabled) {
+      console.log(msg);
+    }
+  }
+
+  function doLogError(msg, err) {
+    if (enabled) {
+      console.log(msg, err);
+    }
+  }
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-general-utils.html">general-utils</a></li><li><a href="module-log-helper.html">log-helper</a></li><li><a href="module-tessel-kit.html">tessel-kit</a></li><li><a href="module-tessel-utils.html">tessel-utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sat May 23 2015 18:09:19 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

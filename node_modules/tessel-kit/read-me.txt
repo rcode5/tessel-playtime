@@ -1,0 +1,5 @@
+
+
+npm install -g jsdoc
+
+jsdoc lib/*.js -r README.md -d jsdoc

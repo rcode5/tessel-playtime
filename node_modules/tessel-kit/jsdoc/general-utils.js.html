@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: general-utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: general-utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ ~ Copyright (c) 2015 George Norman.
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ --------------------------------------------------------------
+ ~ general-utils
+ ~ --------------------------------------------------------------
+ */
+
+/**
+ * A tessel-kit module that provides general purpose utility functions.
+ *
+ * @module general-utils
+ */
+module.exports = (function( ) {
+  "use strict";
+
+  // cache the commandline arguments
+  var argMap = {};
+  var args = process.argv.slice(2);
+
+  if (args != null &amp;&amp; args.length > 0) {
+    var numArgs = args.length;
+
+    for (var i = 0; i &lt; numArgs; i++) {
+      var keyValue = args[i];
+      var key = keyValue.substr(0,keyValue.indexOf('='));
+      var value = keyValue.substr(keyValue.indexOf('=')+1);
+
+      argMap[key] = value;
+    }
+    args = null;
+  }
+
+  return {
+    /**
+     * Returns the given &lt;code>value&lt;/code>, if not empty; otherwise, returns the given &lt;code>defaultValue&lt;/code>.
+     */
+    coalesceOnEmpty: function( value, defaultValue ) {
+      var result = this.isEmpty( value ) ? defaultValue : value;
+
+      return result;
+    },
+
+    /**
+     * Returns the given &lt;code>value&lt;/code>, if not null or undefined; otherwise, returns the given &lt;code>defaultValue&lt;/code>.
+     */
+    coalesceOnNull: function(value, defaultValue) {
+      var result = value === undefined || value === null ? defaultValue : value;
+
+      return result;
+    },
+
+    /**
+     * Returns true if the given value is undefined, null, an empty String or an Object with a
+     * length property that's zero (e.g., a zero-length array).
+     *
+     * @param value to be tested
+     * @returns {boolean|*}
+     */
+    isEmpty: function( value ) {
+      var result = (value === undefined || value === null || value === "" || (value.hasOwnProperty("length") &amp;&amp; value.length == 0));
+
+      return result;
+    },
+
+    /**
+     * Inverse of isEmpty.
+     *
+     * @param value to be tested
+     * @returns {boolean|*}
+     */
+    isNotEmpty: function( value ) {
+      return !this.isEmpty( value );
+    },
+
+    /**
+     * Return a String, of the form "propertyName = propertyValue\n", for every property of the given obj, or until
+     * maxNumProperties has been reached.
+     *
+     * @param obj object to retrieve the properties from.
+     * @param maxNumProperties optional limiter for the number of properties to retrieve.
+     * @returns {string} new-line separated set of property/value pairs
+     */
+    getProperties: function(obj, maxNumProperties) {
+      var result = "";
+
+      maxNumProperties = maxNumProperties === undefined ? Number.MAX_VALUE : maxNumProperties;
+
+      if (obj !== undefined &amp;&amp; obj !== null) {
+        var separator = "";
+
+        var propCount = 0;
+        for (var propertyName in obj) {
+          var objValue;
+
+          if ((obj[propertyName]) === undefined) {
+            objValue = "*** undefined ***";
+          } else {
+            objValue = obj[propertyName];
+          }
+
+          result += separator + propertyName + " = " + objValue;
+          separator = ",\n";
+          propCount++;
+
+          if (propCount >= maxNumProperties) {
+            break;
+          }
+        }
+      }
+
+      return result;
+    },
+
+    /**
+     * Copy all properties that are directly owned by the given source object (i.e., hasOwnProperty) to the given target object.
+     *
+     * @param source object to copy methods and properties from.
+     * @param target object to copy methods and properties to.
+     */
+    copyProperties: function(source, target) {
+      for (var prop in source) {
+        if (source.hasOwnProperty(prop)) {
+          target[prop] = source[prop];
+        }
+      }
+    },
+
+    /**
+     * Returns true if the given value is a number.
+     * See: http://stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
+     *
+     * @param value
+     * @returns {boolean|*}
+     */
+    isNumber: function(value) {
+      return !isNaN(parseFloat(value)) &amp;&amp; isFinite(value);
+    },
+
+    /**
+     * Return the commandline argument specified by argumentName. If not found, then return the specified defaultValue.
+     *
+     * Example commandline:
+     *   "tessel run app/app.js climatePort=A foo=1.23 bar=4.56"
+     *
+     * Example Usages (for the commandline shown above):
+     *   // returns "1.23"
+     *   tesselKit.tesselUtils.getArgumentValue("foo", "asdfgh");
+     *
+     *   // returns "qwerty"
+     *   tesselKit.tesselUtils.getArgumentValue("test", "qwerty");
+     */
+    getArgumentValue: function(argumentName, defaultValue) {
+      var result = argMap[argumentName];
+
+      if (this.isEmpty(result) &amp;&amp; this.isNotEmpty(defaultValue)) {
+        if (typeof defaultValue === 'object') {
+          result = defaultValue[argumentName];
+        } else {
+          result = defaultValue;
+        }
+      }
+
+      return result;
+    }
+  };
+
+}( ));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-general-utils.html">general-utils</a></li><li><a href="module-log-helper.html">log-helper</a></li><li><a href="module-tessel-kit.html">tessel-kit</a></li><li><a href="module-tessel-utils.html">tessel-utils</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0</a> on Sat May 23 2015 18:09:19 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
