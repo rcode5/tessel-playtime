@@ -3,3 +3,4 @@ secrets/*
 \.\#*
 .idea
 node_modules/
+moodio-usb/node_modules/
