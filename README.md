@@ -30,10 +30,9 @@ npm run networked
 ### Tethered
 
 
-Given a tethered computer running a node server using the `usb_reader.js` script, the Tessel will post data to the USB port (subsequently read by that local node server) every 500 ms.
-
-##### THIS DOES NOT WORK
+Given a tethered computer running a node server using the code under `moodio-usb`, the Tessel will post data to the USB port (subsequently read by that local node server).  This has the potential to run faster than the http setup.
 
 ```
-node usb_reader.js
+cd moodio-usb
+npm start
 ```
